@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>论文审阅</title>
+<link rel="stylesheet" href="static/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="static/app.css">
+<script defer src="static/vendor/katex/katex.min.js"></script>
+<script defer src="static/app.js"></script>
+</head>
+<body class="view-dual">
+<header id="top">
+  <div class="bar" id="bar">
+    <button id="short-name" class="brand" type="button" title="回到开头"></button>
+    <span id="filter-chips" class="chips" aria-label="当前筛选"></span>
+    <span class="spacer"></span>
+    <span class="progress" id="progress" title="已读段落 / 全部段落"><span class="progress-line"><span id="progress-fill"></span></span><span id="progress-text">–</span></span>
+    <div class="seg" id="view-toggle" role="group" aria-label="视图：中 / 双 / 英"><button type="button" data-view="zh">中</button><button type="button" data-view="dual">双</button><button type="button" data-view="en">英</button></div>
+    <button id="rail-toggle" class="ib" type="button" aria-pressed="false" title="批注侧栏（s）" aria-label="批注侧栏（s）"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="2.5" y="4" width="15" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12.5 4v12M5 7.5h5M5 10h5M5 12.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+    <button id="submit-round" class="primary" type="button" disabled>提交批注 (0)</button>
+    <button id="settings-btn" class="ib labelled" type="button" aria-expanded="false" aria-controls="settings-panel" title="设置（b）"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M10 6.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Zm7.2 4.6-1.7-.3c-.1.5-.3 1-.6 1.4l1 1.4-1.5 1.5-1.4-1c-.4.3-.9.5-1.4.6l-.3 1.7H8.7l-.3-1.7c-.5-.1-1-.3-1.4-.6l-1.4 1-1.5-1.5 1-1.4c-.3-.4-.5-.9-.6-1.4l-1.7-.3V8.8l1.7-.3c.1-.5.3-1 .6-1.4l-1-1.4 1.5-1.5 1.4 1c.4-.3.9-.5 1.4-.6l.3-1.7h2.1l.3 1.7c.5.1 1 .3 1.4.6l1.4-1 1.5 1.5-1 1.4c.3.4.5.9.6 1.4l1.7.3v2.4Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>设置</span></button>
+  </div>
+  <div id="banner" hidden></div>
+</header>
+  <div id="settings-panel" class="settings" role="dialog" aria-label="设置" hidden>
+  <div class="set-head"><strong>设置</strong><button id="settings-close" class="ib" type="button" aria-label="关闭设置"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+  <section data-section="view"><h4>视图</h4>
+    <div class="set-row"><span class="set-label">语言</span><div class="seg" id="view-toggle-2" role="group" aria-label="语言视图"><button type="button" data-view="zh">中文</button><button type="button" data-view="dual">双栏</button><button type="button" data-view="en">英文</button></div></div>
+    <div class="set-row"><span class="set-label">版心</span><div class="seg" id="width-toggle" role="group" aria-label="版心宽度"><button type="button" data-width="s">窄</button><button type="button" data-width="m">标准</button><button type="button" data-width="l">宽</button></div></div>
+    <div class="set-row"><span class="set-label">字号</span><div class="seg" id="size-toggle" role="group" aria-label="字号"><button type="button" data-size="s">小</button><button type="button" data-size="m">中</button><button type="button" data-size="l">大</button></div></div>
+    <div class="set-row"><span class="set-label">字体</span><div class="seg" id="font-toggle" role="group" aria-label="字体"><button type="button" data-font="serif">衬线</button><button type="button" data-font="sans">无衬线</button></div></div>
+    <div class="set-row"><span class="set-label">主题</span><div class="seg" id="theme-toggle" role="group" aria-label="主题"><button type="button" data-theme="auto">自动</button><button type="button" data-theme="light">浅色</button><button type="button" data-theme="dark">深色</button></div></div>
+    <div class="set-row"><span class="set-label">目录</span><div class="seg" id="toc-seg" role="group" aria-label="目录"><button type="button" data-toc="show">显示</button><button type="button" data-toc="hide">收起</button></div><label class="check"><input type="checkbox" id="s-legend"> 图例</label></div>
+    <div class="set-row checks"><label class="check"><input type="checkbox" id="s-ids" checked> 段落编号</label><label class="check"><input type="checkbox" id="s-synced"> “已同步”标记</label></div>
+  </section>
+  <section data-section="notes"><h4>批注</h4>
+    <div class="set-row"><span class="set-label">位置</span><div class="seg" id="notes-layout" role="group" aria-label="批注位置"><button type="button" data-layout="below">段下</button><button type="button" data-layout="side">侧栏</button></div></div>
+    <div class="set-row"><span class="set-label">显示</span><div class="seg" id="notes-fold" role="group" aria-label="批注显示"><button type="button" data-fold="open">展开</button><button type="button" data-fold="fold">收起</button></div></div>
+    <div class="set-row checks"><label class="check"><input type="checkbox" class="opt-autohide" id="s-autohide"> 滚动时自动隐藏顶栏</label></div>
+  </section>
+  <section data-section="filters"><h4>对比与筛选</h4>
+    <div class="set-row"><span class="set-label">对比基准</span><select id="base-select" aria-label="对比基准"></select></div>
+    <div class="set-row checks">
+      <label class="check"><input type="checkbox" id="f-changed"> 本轮修改</label>
+      <label class="check"><input type="checkbox" id="f-notes"> 有批注</label>
+      <label class="check"><input type="checkbox" id="f-unread"> 未读</label>
+    </div>
+    <div class="set-row"><span class="set-label">状态</span><select id="f-status" aria-label="状态"><option value="">全部</option><option value="open">待处理</option><option value="addressed">已处理</option><option value="declined">不采纳</option></select></div>
+    <div class="set-row checks"><label class="check"><input type="checkbox" id="f-diff"> 改动段落显示对比</label><span id="filter-count" class="muted"></span><button id="f-clear" class="link" type="button">清除筛选</button></div>
+  </section>
+  <section data-section="info"><h4>信息</h4>
+    <div class="set-row"><span class="set-label">论文</span><select id="paper-select" aria-label="论文"></select></div>
+    <div class="meta" id="meta-info"></div>
+    <div class="set-row"><button id="rebuild" class="link" type="button" title="稿件或构建更新后重新解析">重新解析稿件</button></div>
+  </section>
+  <section data-section="keys"><h4>快捷键</h4>
+    <dl class="keys">
+      <dt><kbd>h</kbd></dt><dd>隐藏 / 显示顶栏</dd>
+      <dt><kbd>b</kbd></dt><dd>打开 / 关闭设置</dd>
+      <dt><kbd>t</kbd></dt><dd>收起 / 展开目录</dd>
+      <dt><kbd>n</kbd></dt><dd>收起 / 展开全部批注</dd>
+      <dt><kbd>s</kbd></dt><dd>批注：段下 ↔ 侧栏</dd>
+      <dt><kbd>?</kbd></dt><dd>显示快捷键</dd>
+      <dt><kbd>Esc</kbd></dt><dd>关闭设置或批注编辑框</dd>
+      <dt><kbd>Ctrl</kbd>+<kbd>Enter</kbd></dt><dd>保存批注</dd>
+    </dl>
+    <div class="muted small">自动隐藏开启时，向下滚动顶栏收起，向上滚动或鼠标移到页面顶端时出现。以上设置保存在本浏览器。</div>
+  </section>
+</div>
+<div id="sheet-scrim" hidden></div>
+<button id="toc-handle" class="side-handle" type="button" aria-label="展开目录（t）" title="展开目录（t）">目录 ›</button>
+<div id="layout">
+  <nav id="toc" aria-label="目录"></nav>
+  <div id="toc-scrim" hidden></div>
+  <main id="doc"><div class="loading">正在解析稿件…</div></main>
+</div>
+<div id="tooltip" role="tooltip" hidden></div>
+<button id="sel-note" class="btn primary small" type="button" hidden>+ 批注</button>
+<div id="toast" role="status" hidden></div>
+<dialog id="submit-dialog">
+  <form method="dialog" id="submit-form">
+    <h3 id="submit-title">提交本轮批注</h3>
+    <p id="submit-desc" class="muted"></p>
+    <label class="block-label">给统筹的说明（可选）
+      <textarea id="submit-note" rows="3" placeholder="例如：先处理数字类批注；图 3 的意见优先"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button value="cancel" class="btn ghost" type="submit">取消</button>
+      <button value="ok" class="btn primary" type="submit" id="submit-confirm">提交</button>
+    </div>
+  </form>
+</dialog>
+</body>
+</html>

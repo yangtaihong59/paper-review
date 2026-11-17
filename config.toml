@@ -1,0 +1,12 @@
+# repo 相对本配置文件；论文路径相对 repo。
+repo = "."
+
+[server]
+host = "127.0.0.1"
+port = 8790
+
+[[papers]]
+id = "example"
+dir = "examples/demo-paper"
+manuscript = "manuscript"
+title = "示例论文"

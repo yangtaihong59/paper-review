@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""任意目录下调用审阅工具：./review <命令> ...（等同 python -m paper_review）。"""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from paper_review.cli import main  # noqa: E402
+
+sys.exit(main())
